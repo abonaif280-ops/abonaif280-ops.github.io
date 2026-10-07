@@ -99,7 +99,8 @@
     <div class="sheet-card"><div class="spinner"></div><p id="busy-text"></p></div>
   </div>
 
-  <input id="file-restore" type="file" hidden>
+  <!-- iPhone يعطّل في منتقي الملفات أي امتداد لا تصرّح به الصفحة، فنصرّح بامتداد النسخة الاحتياطية (وبديلها .zip) -->
+  <input id="file-restore" type="file" accept=".srbk,.zip,application/octet-stream,application/zip" hidden>
 
   <script src="/idb.js"></script>
   <script src="/crypto.js"></script>
