@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="التقارير">
+  <meta name="theme-color" content="#145c32">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="apple-touch-icon" href="/icon-180.png">
+  <title>التقارير</title>
+  <link rel="stylesheet" href="/shell.css">
+</head>
+<body>
+  <!-- شاشة التحميل والإعداد -->
+  <div id="screen" class="screen">
+    <div class="card">
+      <img src="/icon-192.png" alt="" class="logo">
+      <h1>التقارير</h1>
+
+      <div id="v-loading" class="view">
+        <div class="spinner"></div>
+        <p id="loading-text" class="muted">جاري التشغيل…</p>
+      </div>
+
+      <div id="v-install" class="view" hidden>
+        <p><b>ثبّت التطبيق على جوالك أولًا</b> حتى تُحفظ بياناتك داخله:</p>
+        <ol class="steps">
+          <li>اضغط زر المشاركة <span class="ico">⬆︎</span> أسفل Safari</li>
+          <li>اختر «إضافة إلى الشاشة الرئيسية»</li>
+          <li>افتح التطبيق من أيقونته على الشاشة الرئيسية</li>
+        </ol>
+        <p class="muted small">ملاحظة: بيانات التطبيق المثبّت منفصلة عن Safari، فلا تُدخل بياناتك هنا.</p>
+        <button id="btn-continue-browser" class="btn btn-ghost">المتابعة في المتصفح على أي حال</button>
+      </div>
+
+      <div id="v-password" class="view" hidden>
+        <p>أدخل كلمة سر التطبيق (مرة واحدة على هذا الجهاز):</p>
+        <form id="f-password" autocomplete="off">
+          <input id="in-password" type="password" class="input" placeholder="كلمة سر التطبيق" autocomplete="current-password" required>
+          <button class="btn" type="submit">فتح</button>
+        </form>
+        <p id="password-err" class="err" hidden></p>
+      </div>
+
+      <div id="v-firstrun" class="view" hidden>
+        <p><b>لا توجد بيانات على هذا الجهاز بعد.</b></p>
+        <button id="btn-import-first" class="btn">استيراد ملف بياناتي (نسخة احتياطية)</button>
+        <button id="btn-fresh" class="btn btn-ghost">البدء بدون بيانات</button>
+        <p class="muted small">عند البدء بدون بيانات: الدخول بالمستخدم aaa وكلمة المرور 1234 ثم غيّرها فورًا.</p>
+      </div>
+
+      <div id="v-error" class="view" hidden>
+        <p class="err" id="error-text"></p>
+        <button class="btn" onclick="location.reload()">إعادة المحاولة</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- البرنامج نفسه -->
+  <iframe id="app" title="البرنامج" hidden></iframe>
+
+  <!-- زر القائمة وقائمة الأدوات -->
+  <button id="menu-btn" class="menu-btn" hidden aria-label="القائمة">☰</button>
+  <div id="menu" class="sheet" hidden>
+    <div class="sheet-card">
+      <h2>أدوات التطبيق</h2>
+      <button class="btn" data-act="lock">🔒 قفل الآن</button>
+      <button class="btn" data-act="backup">💾 حفظ نسخة احتياطية مشفرة</button>
+      <button class="btn btn-ghost" data-act="restore">📥 استيراد نسخة احتياطية</button>
+      <button class="btn btn-ghost" data-act="reload">↻ إعادة تحميل الصفحة</button>
+      <p class="muted small" id="storage-info"></p>
+      <button class="btn btn-ghost" data-act="close">إغلاق</button>
+    </div>
+  </div>
+
+  <!-- ملف جاهز للحفظ/المشاركة -->
+  <div id="dl" class="sheet" hidden>
+    <div class="sheet-card">
+      <h2>الملف جاهز</h2>
+      <p id="dl-name" class="fname"></p>
+      <button id="dl-share" class="btn">حفظ / مشاركة / فتح</button>
+      <a id="dl-link" class="btn btn-ghost" download>تنزيل</a>
+      <button class="btn btn-ghost" data-close="dl">إغلاق</button>
+    </div>
+  </div>
+
+  <!-- عرض صورة أو مقطع -->
+  <div id="viewer" class="viewer" hidden>
+    <button class="viewer-close" data-close="viewer" aria-label="إغلاق">✕</button>
+    <div id="viewer-body"></div>
+  </div>
+
+  <!-- تقدم العمليات الطويلة -->
+  <div id="busy" class="sheet" hidden>
+    <div class="sheet-card"><div class="spinner"></div><p id="busy-text"></p></div>
+  </div>
+
+  <input id="file-restore" type="file" hidden>
+
+  <script src="/idb.js"></script>
+  <script src="/crypto.js"></script>
+  <script src="/shell.js"></script>
+</body>
+</html>

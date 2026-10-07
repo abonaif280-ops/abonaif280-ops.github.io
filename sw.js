@@ -1,23 +1,24 @@
 // عامل الخدمة: يجعل التطبيق يعمل بلا إنترنت، ويوجّه طلبات صفحات البرنامج
 // إلى Flask الذي يعمل داخل الجهاز (عبر الواجهة) بدل أي خادم خارجي.
-const VERSION = "20261007153420";
+const VERSION = "20261007154853";
 const CACHE = "srb-static-" + VERSION;
-importScripts("/shell/idb.js");
+importScripts("/idb.js");
 
 const STATIC = [
-  "/shell/", "/shell/index.html", "/shell/shell.js", "/shell/shell.css", "/shell/idb.js", "/shell/crypto.js",
-  "/shell/worker.js", "/shell/inject.js", "/manifest.webmanifest", "/icon-180.png", "/icon-192.png", "/icon-512.png",
+  "/start.html", "/shell.js", "/shell.css", "/idb.js", "/crypto.js",
+  "/worker.js", "/inject.js", "/manifest.webmanifest", "/icon-180.png", "/icon-192.png", "/icon-512.png",
   "/bundle.enc",
-  "/pyodide/pyodide.mjs", "/pyodide/pyodide.asm.mjs", "/pyodide/pyodide.asm.wasm", "/pyodide/python_stdlib.zip",
-  "/pyodide/pyodide-lock.json",
-  "/pyodide/blinker-1.9.0-py3-none-any.whl", "/pyodide/click-8.3.1-py3-none-any.whl", "/pyodide/et_xmlfile-2.0.0-py3-none-any.whl",
-  "/pyodide/flask-3.1.3-py3-none-any.whl", "/pyodide/itsdangerous-2.2.0-py3-none-any.whl", "/pyodide/jinja2-3.1.6-py3-none-any.whl",
-  "/pyodide/lxml-6.1.3-cp314-cp314-pyemscripten_2026_0_wasm32.whl", "/pyodide/markupsafe-3.0.3-cp314-cp314-pyemscripten_2026_0_wasm32.whl",
-  "/pyodide/openpyxl-3.1.5-py2.py3-none-any.whl", "/pyodide/pycryptodome-3.23.0-cp37-abi3-pyemscripten_2026_0_wasm32.whl", "/pyodide/pillow-12.2.0-cp314-cp314-pyemscripten_2026_0_wasm32.whl",
-  "/pyodide/python_pptx-1.0.2-py3-none-any.whl", "/pyodide/typing_extensions-4.15.0-py3-none-any.whl",
-  "/pyodide/werkzeug-3.1.9-py3-none-any.whl", "/pyodide/xlsxwriter-3.2.9-py3-none-any.whl",
+  "/pyodide.mjs", "/pyodide.asm.mjs", "/pyodide.asm.wasm", "/python_stdlib.zip",
+  "/pyodide-lock.json",
+  "/blinker-1.9.0-py3-none-any.whl", "/click-8.3.1-py3-none-any.whl", "/et_xmlfile-2.0.0-py3-none-any.whl",
+  "/flask-3.1.3-py3-none-any.whl", "/itsdangerous-2.2.0-py3-none-any.whl", "/jinja2-3.1.6-py3-none-any.whl",
+  "/lxml-6.1.3-cp314-cp314-pyemscripten_2026_0_wasm32.whl", "/markupsafe-3.0.3-cp314-cp314-pyemscripten_2026_0_wasm32.whl",
+  "/openpyxl-3.1.5-py2.py3-none-any.whl", "/pycryptodome-3.23.0-cp37-abi3-pyemscripten_2026_0_wasm32.whl", "/pillow-12.2.0-cp314-cp314-pyemscripten_2026_0_wasm32.whl",
+  "/python_pptx-1.0.2-py3-none-any.whl", "/typing_extensions-4.15.0-py3-none-any.whl",
+  "/werkzeug-3.1.9-py3-none-any.whl", "/xlsxwriter-3.2.9-py3-none-any.whl",
 ];
-const OWN = /^\/(shell\/|pyodide\/|sw\.js$|manifest\.webmanifest$|icon-\d+\.png$|bundle\.enc$|robots\.txt$)/;
+// ملفات التطبيق نفسه (كلها في مجلد واحد) — وأي مسار غيرها هو صفحة من صفحات البرنامج
+const OWN = /^\/(start\.html|shell\.(js|css)|idb\.js|crypto\.js|worker\.js|inject\.js|sw\.js|index\.html|manifest\.webmanifest|icon-\d+\.png|bundle\.enc|robots\.txt|pyodide[\w.-]*\.(mjs|wasm|json)|python_stdlib\.zip|[\w.-]+\.whl)$/;
 
 self.addEventListener("install", (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(STATIC.map((u) => new Request(u, { cache: "reload" })))).then(() => self.skipWaiting()));
@@ -41,7 +42,7 @@ self.addEventListener("fetch", (e) => {
   }
   // فتح التطبيق من أي رابط يذهب للواجهة (والواجهة تعرض صفحات البرنامج داخلها)
   if (e.request.mode === "navigate" && e.request.destination === "document") {
-    e.respondWith(Response.redirect("/shell/", 302));
+    e.respondWith(Response.redirect("/start.html", 302));
     return;
   }
   if (p.startsWith("/static/uploads/") && (e.request.method === "GET" || e.request.method === "HEAD")) {
@@ -73,8 +74,8 @@ async function serveUpload(req, name) {
 
 async function shellClient() {
   const all = await self.clients.matchAll({ type: "window", includeUncontrolled: true });
-  return all.find((c) => new URL(c.url).pathname.startsWith("/shell/") && c.frameType !== "nested") ||
-         all.find((c) => new URL(c.url).pathname.startsWith("/shell/"));
+  const isShell = (c) => new URL(c.url).pathname === "/start.html";
+  return all.find((c) => isShell(c) && c.frameType !== "nested") || all.find(isShell);
 }
 
 async function toFlask(req) {
