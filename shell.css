@@ -111,14 +111,14 @@ h2 { margin: 0 0 14px; font-size: 18px; color: var(--accent); }
   position: fixed;
   left: max(10px, env(safe-area-inset-left));
   bottom: max(12px, env(safe-area-inset-bottom));
-  width: 44px; height: 44px;
+  width: 38px; height: 38px;
   border-radius: 50%;
   border: 0;
   background: var(--green);
   color: #fff;
-  font-size: 20px;
+  font-size: 17px;
   box-shadow: 0 3px 12px rgba(0,0,0,.25);
-  opacity: .85;
+  opacity: .7;
   z-index: 10;
 }
 .sheet {
